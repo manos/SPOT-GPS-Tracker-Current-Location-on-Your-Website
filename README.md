@@ -4,9 +4,17 @@ features
 spotparse.py does the following:
  * saves current latitude,longitude to a file
  * saves all known locations returned from the SPOT API as JSON
+ * optionally, keeps adding to the file, saving your tracks for an entire trip (until you move the JSON file)
  * same as above, but as XML as well
  * lets you know if your batteries need to be changed.
 
+> Usage: spotparse.py [options]
+>
+> Options:
+>   -h, --help            show this help message and exit
+>   -d, --debug           print debug messages
+>   -k, --keep-json-tracks
+>                         keep all tracks until file is moved
 
 background
 ----------
@@ -18,14 +26,15 @@ It’s not a problem if you export your data to Spot Adventures and create an �
 
 I guess you need to cache the last used location yourself.
 
-spotparse.pl
-------------
-This was the first attempt. It's ugly, and don't use it.
-You probably want to have this script write out straight HTML rather than the javascript gunk I did (which is a hack because including iframes in the joomla version I use is broken). 
-
 spotparse.py
 ------------
 New hotness. Works very well.
-Run this from cron every 15 minutes, and you’ll always have your last checked-in GPS coordinates! And a .json (and .xml) file that matches what SPOT has for you (they get overwritten each time, as long as the API didn't return an error).
 
+Run this from cron every 15 minutes, and you’ll always have your last checked-in GPS coordinates!
 
+And a .json (and .xml) file that matches what SPOT has for you - overwritten on each run, unless -k is used.
+
+spotparse.pl
+------------
+This was the first attempt. It's ugly, and don't use it.
+You probably want to have this script write out straight HTML rather than the javascript gunk I did (which is a hack because including iframes in the joomla version I use is broken).
