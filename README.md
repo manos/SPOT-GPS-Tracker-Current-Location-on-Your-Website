@@ -6,12 +6,14 @@ It’s not a problem if you export your data to Spot Adventures and create an �
 
 I guess you need to cache the last used location yourself.
 
-== spotparse.pl
+spotparse.pl
+------------
 This was the first attempt. It's ugly, and don't use it.
 You probably want to have this script write out straight HTML rather than the javascript gunk I did (which is a hack because including iframes in the joomla version I use is broken). 
 
-== spotparse.py
+spotparse.py
+------------
 New hotness. Works very well.
-Run this from cron every 15 minutes, and you’ll always have your last checked-in GPS coordinates! And a .json (and .xml) file that matches what SPOT has for you (they get overwritten each time).
+Run this from cron every 15 minutes, and you’ll always have your last checked-in GPS coordinates! And a .json (and .xml) file that matches what SPOT has for you (they get overwritten each time, as long as the API didn't return an error).
 
 
