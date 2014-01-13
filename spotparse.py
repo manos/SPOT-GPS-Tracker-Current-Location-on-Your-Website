@@ -16,6 +16,7 @@ import logging
 import simplejson as json
 import sys
 from optparse import OptionParser
+from operator import itemgetter
 
 """ Edit these items: """
 #spot_id = "0Vn4kA4MiPgNSYD52NgPjuVJDpUCSUlGW"
@@ -28,16 +29,19 @@ url = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/fee
 
 
 def merge_tracks(a, b):
-    """ Appends tracks in (b) into (a), skipping those with the same timestamp. """
+    """ merges tracks (b) into (a), skipping those with the same timestamp.
+    Sorts by unixTime key. """
     if a is None:  # there were no tracks in the file
         a = []
         a_times = []
     else:
         a_times = [track['unixTime'] for track in a]
 
-    return a + [track for track in b
-                if track['unixTime'] not in a_times
-               ]
+    return sorted(a + [track for track in b
+                       if track['unixTime'] not in a_times
+                      ],
+                  key=itemgetter('unixTime'), reverse=True
+                 )
 
 if __name__ == '__main__':
 
@@ -96,7 +100,7 @@ if __name__ == '__main__':
         fh.close()
 
         if options.keep_json_tracks:
-            json_output = merge_tracks(tracks, api_tracks)
+            json_output = merge_tracks(api_tracks, tracks)
             logging.debug("Merged API and cache tracks into %s tracks." % len(json_output))
         else:
             json_output = api_tracks
