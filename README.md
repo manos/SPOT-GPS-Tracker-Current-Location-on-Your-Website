@@ -1,3 +1,15 @@
+
+features
+--------
+spotparse.py does the following:
+ * saves current latitude,longitude to a file
+ * saves all known locations returned from the SPOT API as JSON
+ * same as above, but as XML as well
+ * lets you know if your batteries need to be changed.
+
+
+background
+----------
 If you subscribe to the Track Progress service with SPOT, you can tell the GPS device to send your location to SPOT via satellite every 10 minutes, and then export those tracks at a later time.
 
 They even have an API from which you can fetch JSON with all your current tracks! The unfortunate part, and the reason for this script, is that they only keep 30 days of GPS coordinates.
