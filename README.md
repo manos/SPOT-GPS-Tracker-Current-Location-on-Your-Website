@@ -16,6 +16,7 @@ Usage: spotparse.py [options]
    -d, --debug           print debug messages
    -k, --keep-json-tracks
                          keep all tracks until file is moved
+```
 
 background
 ----------
