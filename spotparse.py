@@ -1,8 +1,16 @@
 #!/usr/bin/python
 """
-Script to fetch SPOT url and: 1) save lat,lon coordinates to a file, 2) save all spot messages as JSON, 3) and xml as well.
-Files get re-written on every run, if there's new data. Oh, it writes to stderr if batteryState isn't GOOD - so if you run from cron, you'll get email when your spot batteries need to be changed.
+Script to fetch SPOT url and:
+    1) save lat,lon coordinates to a file,
+    2) save all spot messages as JSON,
+    3) and xml as well.
+Files get re-written on every run, if there's new data.
+Oh, it also writes to stderr if batteryState isn't GOOD - so if you run from cron,
+you'll get email when your spot batteries need to be changed.
+
+Compatible with python 2.4+
 """
+
 import urllib2
 import simplejson as json
 import sys
