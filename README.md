@@ -8,13 +8,14 @@ spotparse.py does the following:
  * same as above, but as XML as well
  * lets you know if your batteries need to be changed.
 
-> Usage: spotparse.py [options]
->
-> Options:
->   -h, --help            show this help message and exit
->   -d, --debug           print debug messages
->   -k, --keep-json-tracks
->                         keep all tracks until file is moved
+```
+Usage: spotparse.py [options]
+
+ Options:
+   -h, --help            show this help message and exit
+   -d, --debug           print debug messages
+   -k, --keep-json-tracks
+                         keep all tracks until file is moved
 
 background
 ----------
