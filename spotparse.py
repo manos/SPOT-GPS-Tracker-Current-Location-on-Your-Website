@@ -57,7 +57,7 @@ if __name__ == '__main__':
                       action="store_true")
     parser.add_option("-m", "--map", help="generates a google map with all points (and draws a line between them)",
                       action="store_true")
-    parser.add_option("--map-zoom", help="zoom level for map", default=16)
+    parser.add_option("--map-zoom", help="zoom level for map", default=12)
     (options, args) = parser.parse_args()
 
     if options.debug:
