@@ -21,6 +21,11 @@ Options:
   --map-zoom=MAP_ZOOM   zoom level for map
 ```
 
+basic usage
+-----------
+Just run `spotparse.py -k -m` from cron (every 15 minutes at most), and it will generate a map.
+Edit the file path locations in the script to meet your needs.
+
 background
 ----------
 If you subscribe to the Track Progress service with SPOT, you can tell the GPS device to send your location to SPOT via satellite every 10 minutes, and then export those tracks at a later time.
