@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser.add_option("-d", "--debug", help="print debug messages", action="store_true")
     parser.add_option("-k", "--keep-json-tracks", help="keep all tracks until file is moved",
                       action="store_true")
-    parser.add_option("-m", "--map", help="generates a google map with all points",
+    parser.add_option("-m", "--map", help="generates a google map with all points (and draws a line between them)",
                       action="store_true")
     parser.add_option("--map-zoom", help="zoom level for map", default=16)
     (options, args) = parser.parse_args()

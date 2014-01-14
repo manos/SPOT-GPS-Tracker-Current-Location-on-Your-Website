@@ -11,11 +11,13 @@ spotparse.py does the following:
 ```
 Usage: spotparse.py [options]
 
- Options:
-   -h, --help            show this help message and exit
-   -d, --debug           print debug messages
-   -k, --keep-json-tracks
-                         keep all tracks until file is moved
+Options:
+  -h, --help            show this help message and exit
+  -d, --debug           print debug messages
+  -k, --keep-json-tracks
+                        keep all tracks until file is moved
+  -m, --map             generates a google map with all points (and draws line between them)
+  --map-zoom=MAP_ZOOM   zoom level for map
 ```
 
 background
