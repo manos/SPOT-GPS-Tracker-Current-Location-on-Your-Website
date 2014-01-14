@@ -18,12 +18,18 @@ import sys
 from optparse import OptionParser
 from operator import itemgetter
 
+try:
+    import pygmaps
+except ImportError:
+    pass
+
 """ Edit these items: """
 #spot_id = "0Vn4kA4MiPgNSYD52NgPjuVJDpUCSUlGW"
 spot_id = "0W8hq7UcGlKSuEszhPnJXzPMTlgRJgFhP"
 last_latlon_cache = "/Users/charlie/lastspotlocation.txt"
 json_cache = "/Users/charlie/spotlocations.json"
 xml_cache = "/Users/charlie/spotlocations.xml"
+map_output = "/Users/charlie/mymap.html"
 
 url = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/%s/message" % spot_id
 
@@ -49,6 +55,9 @@ if __name__ == '__main__':
     parser.add_option("-d", "--debug", help="print debug messages", action="store_true")
     parser.add_option("-k", "--keep-json-tracks", help="keep all tracks until file is moved",
                       action="store_true")
+    parser.add_option("-m", "--map", help="generates a google map with all points",
+                      action="store_true")
+    parser.add_option("--map-zoom", help="zoom level for map", default=16)
     (options, args) = parser.parse_args()
 
     if options.debug:
@@ -108,6 +117,16 @@ if __name__ == '__main__':
         fh = open(json_cache, 'w')
         json.dump(json_output, fh)
         fh.close()
+
+        # generate google map with points for every point in json output
+        if options.map:
+            gmap = pygmaps.maps(json_output[0]['latitude'], json_output[0]['longitude'], options.map_zoom)
+            for track in json_output:
+                gmap.addpoint(track['latitude'], track['longitude'], "#0000FF")
+
+            logging.debug("All points: %s" % [(track['latitude'], track['longitude']) for track in tracks])
+            gmap.addpath([(track['latitude'], track['longitude']) for track in tracks])
+            gmap.draw(map_output)
 
 
         # write all messages returned from spot API as XML:
