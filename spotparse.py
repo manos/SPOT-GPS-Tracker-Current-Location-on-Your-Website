@@ -1,12 +1,6 @@
 #!/usr/bin/python
 """
-Script to fetch SPOT url and:
-    1) save lat,lon coordinates to a file,
-    2) save all spot messages as JSON,
-    3) and xml as well.
-Files get re-written on every run, if there's new data.
-Oh, it also writes to stderr if batteryState isn't GOOD - so if you run from cron,
-you'll get email when your spot batteries need to be changed.
+See README.md
 
 Compatible with python 2.4+
 """
@@ -36,7 +30,8 @@ url = "https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/fee
 
 def merge_tracks(a, b):
     """ merges tracks (b) into (a), skipping those with the same timestamp.
-    Sorts by unixTime key. """
+    Sorts by unixTime key.
+    """
     if a is None:  # there were no tracks in the file
         a = []
         a_times = []
@@ -48,6 +43,18 @@ def merge_tracks(a, b):
                       ],
                   key=itemgetter('unixTime'), reverse=True
                  )
+
+def do_map(json_output, options):
+    """ Creates a google map HTML page with points plotted for every point in known,
+    and draws a line between each.
+    """
+    gmap = pygmaps.maps(json_output[0]['latitude'], json_output[0]['longitude'], options.map_zoom)
+    for track in json_output:
+        gmap.addpoint(track['latitude'], track['longitude'], "#0000FF")
+
+    logging.debug("All points: %s" % [(track['latitude'], track['longitude']) for track in tracks])
+    gmap.addpath([(track['latitude'], track['longitude']) for track in tracks])
+    gmap.draw(map_output)
 
 if __name__ == '__main__':
 
@@ -75,63 +82,56 @@ if __name__ == '__main__':
     if 'errors' in data.get('response', {}):
         sys.stdout.write(str(data['response']['errors']))
         sys.exit(0)
+
+    try:
+        data = data['response']['feedMessageResponse']
+    except KeyError:
+        sys.stderr.write("ERROR: JSON received from URL contains no feedMessageResponse,"
+                         " but response->errors wasn't populated. WAT.")
+        sys.exit(0)
+
+    count = int(data.get('count', 0))
+    last_message = data.get('messages', {}).get('message', {})[0]
+
+    # write to stderr (so you get cron mail) if batteryState is not GOOD.
+    if 'GOOD' not in last_message.get('batteryState', 'GOOD'):
+        sys.stderr.write("WARNING: spot battery is in state: %s" % last_message.get('batteryState'))
+
+    # write the last lat,lon to a file:
+    fh = open(last_latlon_cache, 'w')
+    fh.write("%s,%s" % (last_message.get('latitude', 0), last_message.get('longitude', 0)))
+    fh.close()
+
+    # write all messages returned from spot API as JSON (appending to existing, if enabled):
+    api_tracks = data.get('messages', {}).get('message', {})
+    logging.debug("Got %s tracks from SPOT API." % len(api_tracks))
+
+    fh = open(json_cache, 'r')
+    try:
+        tracks = json.load(fh)
+        logging.debug("Got %s tracks from JSON cache file." % len(tracks))
+    except ValueError, err:
+        logging.debug(err)
+        tracks = None
+    fh.close()
+
+    if options.keep_json_tracks:
+        json_output = merge_tracks(api_tracks, tracks)
+        logging.debug("Merged API and cache tracks into %s tracks." % len(json_output))
     else:
-        try:
-            data = data['response']['feedMessageResponse']
-        except KeyError:
-            sys.stderr.write("ERROR: JSON received from URL contains no feedMessageResponse,"
-                             " but response->errors wasn't populated. WAT.")
-            sys.exit(0)
+        json_output = api_tracks
+        logging.debug("Writing %s API tracks into cache." % len(json_output))
+    fh = open(json_cache, 'w')
+    json.dump(json_output, fh)
+    fh.close()
 
-        count = int(data.get('count', 0))
-        last_message = data.get('messages', {}).get('message', {})[0]
+    # draw the google map:
+    if options.map:
+        do_map(json_output, options)
 
-        # write to stderr (so you get cron mail) if batteryState is not GOOD.
-        if 'GOOD' not in last_message.get('batteryState', 'GOOD'):
-            sys.stderr.write("WARNING: spot battery is in state: %s" % last_message.get('batteryState'))
-
-        # write the last lat,lon to a file:
-        fh = open(last_latlon_cache, 'w')
-        fh.write("%s,%s" % (last_message.get('latitude', 0), last_message.get('longitude', 0)))
-        fh.close()
-
-        # write all messages returned from spot API as JSON (appending to existing, if enabled):
-        api_tracks = data.get('messages', {}).get('message', {})
-        logging.debug("Got %s tracks from SPOT API." % len(api_tracks))
-
-        fh = open(json_cache, 'r')
-        try:
-            tracks = json.load(fh)
-            logging.debug("Got %s tracks from JSON cache file." % len(tracks))
-        except ValueError, err:
-            logging.debug(err)
-            tracks = None
-        fh.close()
-
-        if options.keep_json_tracks:
-            json_output = merge_tracks(api_tracks, tracks)
-            logging.debug("Merged API and cache tracks into %s tracks." % len(json_output))
-        else:
-            json_output = api_tracks
-            logging.debug("Writing %s API tracks into cache." % len(json_output))
-        fh = open(json_cache, 'w')
-        json.dump(json_output, fh)
-        fh.close()
-
-        # generate google map with points for every point in json output
-        if options.map:
-            gmap = pygmaps.maps(json_output[0]['latitude'], json_output[0]['longitude'], options.map_zoom)
-            for track in json_output:
-                gmap.addpoint(track['latitude'], track['longitude'], "#0000FF")
-
-            logging.debug("All points: %s" % [(track['latitude'], track['longitude']) for track in tracks])
-            gmap.addpath([(track['latitude'], track['longitude']) for track in tracks])
-            gmap.draw(map_output)
-
-
-        # write all messages returned from spot API as XML:
-        fh = open(xml_cache, 'w')
-        fh.write(str(xml_response))
-        fh.close()
+    # write all messages returned from spot API as XML:
+    fh = open(xml_cache, 'w')
+    fh.write(str(xml_response))
+    fh.close()
 
 
