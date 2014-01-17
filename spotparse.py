@@ -53,8 +53,8 @@ def do_map(json_output, options):
     for track in json_output:
         gmap.addpoint(track['latitude'], track['longitude'], "#0000FF")
 
-    logging.debug("All points: %s" % [(track['latitude'], track['longitude']) for track in tracks])
-    gmap.addpath([(track['latitude'], track['longitude']) for track in tracks])
+    logging.debug("All points: %s" % [(track['latitude'], track['longitude']) for track in json_output])
+    gmap.addpath([(track['latitude'], track['longitude']) for track in json_output])
     gmap.draw(map_output)
 
 if __name__ == '__main__':
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         tracks = []
 
     if options.keep_json_tracks:
-        json_output = merge_tracks(api_tracks, tracks)
+        json_output = merge_tracks(tracks, api_tracks)
         logging.debug("Merged API and cache tracks into %s tracks." % len(json_output))
     else:
         json_output = api_tracks
