@@ -9,6 +9,7 @@ import urllib2
 import logging
 import simplejson as json
 import sys
+import os
 from optparse import OptionParser
 from operator import itemgetter
 
@@ -106,14 +107,17 @@ if __name__ == '__main__':
     api_tracks = data.get('messages', {}).get('message', {})
     logging.debug("Got %s tracks from SPOT API." % len(api_tracks))
 
-    fh = open(json_cache, 'r')
-    try:
-        tracks = json.load(fh)
-        logging.debug("Got %s tracks from JSON cache file." % len(tracks))
-    except ValueError, err:
-        logging.debug(err)
-        tracks = None
-    fh.close()
+    if os.path.exists(json_cache):
+        fh = open(json_cache, 'r')
+        try:
+            tracks = json.load(fh)
+            logging.debug("Got %s tracks from JSON cache file." % len(tracks))
+        except ValueError, err:
+            logging.debug(err)
+            tracks = None
+        fh.close()
+    else:
+        tracks = []
 
     if options.keep_json_tracks:
         json_output = merge_tracks(api_tracks, tracks)
