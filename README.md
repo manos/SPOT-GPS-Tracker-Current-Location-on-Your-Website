@@ -25,7 +25,7 @@ basic usage
 -----------
 Edit the file, to add your spot_id and file paths, then:
 
-Just run `spotparse.py -k -m` from cron (every 15 minutes at most), and it will generate a map.
+Just run `spotparse.py -k -m >/dev/null` from cron (every 15 minutes at most), and it will generate a map.
 
 background
 ----------

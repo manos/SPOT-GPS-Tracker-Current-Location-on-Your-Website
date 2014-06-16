@@ -20,7 +20,7 @@ except ImportError:
 
 """ Edit these items: """
 #spot_id = "0Vn4kA4MiPgNSYD52NgPjuVJDpUCSUlGW"
-spot_id = "0W8hq7UcGlKSuEszhPnJXzPMTlgRJgFhP"
+spot_id = "0o3VKhY68qbqgWIGxHPiY0RqFnO8oFs4l"
 last_latlon_cache = "/Users/charlie/lastspotlocation.txt"
 json_cache = "/Users/charlie/spotlocations.json"
 xml_cache = "/Users/charlie/spotlocations.xml"
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         data = json.load(response)
         xml_response = urllib2.urlopen(url + ".xml").read()
     except Exception, err:
-        # the API isn't always reliable.. exit silently
+        # the API isn't always reliable.. exit silently (stdout, not stderr)
         sys.stdout.write("ERROR retreiving URL: %s" % err)
         sys.exit(1)
 
@@ -92,7 +92,11 @@ if __name__ == '__main__':
         sys.exit(0)
 
     count = int(data.get('count', 0))
-    last_message = data.get('messages', {}).get('message', {})[0]
+    try:
+        last_message = data.get('messages', {}).get('message', {})[0]
+    except KeyError:
+        sys.stdout.write("message data is empty (normally happens on first track after no use for 30 days)")
+        sys.exit(0)
 
     # write to stderr (so you get cron mail) if batteryState is not GOOD.
     if 'GOOD' not in last_message.get('batteryState', 'GOOD'):
