@@ -35,7 +35,7 @@ open(FILE, ">$CACHEFILE");
 print FILE $lat . "," . $long . "\n";
 close(FILE);
 
-# STOP here. You probably simply want to write out an html snippet with a google URL, that you can include via an iframe.
+# STOP here. You probably simply want to write out an html snippet with a google URL/address, that you can include via an iframe.
 # continue below to do crazy JS-that-creates-HTML dance (actually this is useful if you use joomla)
 
 # ugly shit that writes out javascript to write out html, to include a linked static google maps image
