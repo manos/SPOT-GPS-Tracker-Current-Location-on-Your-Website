@@ -2,7 +2,7 @@
 """
 See README.md
 
-Compatible with python 2.4+
+Compatible with python 2.4+ (Which is officialy no longer in use )
 """
 
 import urllib2
